@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <title>NASA POWER Solar Data</title>
+</head>
+<body>
+
+<h2>🌞 NASA POWER – Solar Radiation</h2>
+<button onclick="loadSolar()">Load Data</button>
+
+<pre id="output">กดปุ่มเพื่อโหลดข้อมูล</pre>
+
+<script>
+async function loadSolar() {
+  const lat = 13.7563;   // กรุงเทพ
+  const lon = 100.5018;
+
+  // วันที่ (YYYYMMDD)
+  const start = "20250107";
+  const end   = "20250109";
+
+  const url =
+    "https://power.larc.nasa.gov/api/temporal/hourly/point" +
+    "?parameters=ALLSKY_SFC_SW_DWN" +
+    "&community=RE" +
+    "&latitude=" + lat +
+    "&longitude=" + lon +
+    "&start=" + start +
+    "&end=" + end +
+    "&format=JSON";
+    // const url = "https://power.larc.nasa.gov/api/temporal/hourly/point?parameters=ALLSKY_SFC_SW_DWN&community=RE&latitude=13.7563&longitude=100.5018&start=20250101&end=20250101&format=JSON";
+  try {
+    document.getElementById("output").textContent = "⏳ Loading...";
+
+    const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error("HTTP status " + response.status);
+    }
+
+    const data = await response.json();
+
+    const solar =
+      data.properties.parameter.ALLSKY_SFC_SW_DWN;
+
+    document.getElementById("output").textContent =
+      JSON.stringify(solar, null, 2);
+
+  } catch (error) {
+    document.getElementById("output").textContent =
+      "❌ Error: " + error.message;
+  }
+}
+</script>
+
+</body>
+</html>
