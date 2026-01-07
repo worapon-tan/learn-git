@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>เช็คสภาพอากาศด้วย Fetch API</title>
+    <style>
+        body { font-family: sans-serif; display: flex; justify-content: center; padding: 20px; background-color: #f4f4f9; }
+        .card { background: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); width: 300px; }
+        h2 { color: #333; margin-top: 0; }
+        .data-item { margin: 10px 0; font-size: 1.1em; }
+        .error { color: red; font-weight: bold; }
+        button { width: 100%; padding: 10px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; }
+        button:hover { background: #0056b3; }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <h2>สภาพอากาศกรุงเทพฯ</h2>
+    <div id="weather-info">
+        <p>กำลังโหลดข้อมูล...</p>
+    </div>
+    <button onclick="getWeather()">อัปเดตข้อมูล</button>
+</div>
+
+<script>
+    async function getWeather() {
+        const infoDiv = document.getElementById('weather-info');
+        const apiKey = '41a241f138b8c62b82be1f1ea4b9afec'; // *** อย่าลืมนำ API Key ของคุณมาใส่ที่นี่ ***
+        const city = 'Bangkok';
+        const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&units=metric&appid=${apiKey}`;
+
+        try {
+            const response = await fetch(url);
+            
+            if (!response.ok) {
+                throw new Error('ไม่สามารถดึงข้อมูลได้ (เช็ค API Key ของคุณ)');
+            }
+
+            const data = await response.json();
+
+            // แสดงผลใน Console.log เพื่อตรวจสอบโครงสร้างข้อมูล
+            console.log("ข้อมูลที่ได้รับจาก API:", data);
+
+            // นำข้อมูลมาเขียนลงใน HTML
+            infoDiv.innerHTML = `
+                <div class="data-item"><strong>เมือง:</strong> ${data.name}</div>
+                <div class="data-item"><strong>อุณหภูมิ:</strong> ${data.main.temp} °C</div>
+                <div class="data-item"><strong>สภาพอากาศ:</strong> ${data.weather[0].description}</div>
+                <div class="data-item"><strong>ความชื้น:</strong> ${data.main.humidity}%</div>
+            `;
+
+        } catch (error) {
+            console.error('Error:', error);
+            infoDiv.innerHTML = `<p class="error">เกิดข้อผิดพลาด: ${error.message}</p>`;
+        }
+    }
+
+    // เรียกทำงานทันทีเมื่อเปิดหน้าเว็บ
+    getWeather();
+</script>
+
+</body>
+</html>
